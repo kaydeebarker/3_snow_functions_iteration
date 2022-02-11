@@ -14,9 +14,9 @@ library(readxl)
 ```
 
 
-# Assignment:
+# Assignment
 
-1. Extract the meteorological data URLs. Here we want you to use the `rvest` package to get the URLs for the `SASP forcing` and `SBSP_forcing` meteorological datasets.
+## 1. Extract the meteorological data URLs. Here we want you to use the `rvest` package to get the URLs for the `SASP forcing` and `SBSP_forcing` meteorological datasets.
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
 
@@ -33,7 +33,7 @@ links # view
 
 ```
 
-2. Download the meteorological data. Use the `download_file` and `str_split_fixed` commands to download the data and save it in your data folder. You can use a for loop or a map function. 
+## 2. Download the meteorological data. Use the `download_file` and `str_split_fixed` commands to download the data and save it in your data folder. You can use a for loop or a map function. 
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
 
@@ -67,7 +67,7 @@ if(evaluate == T){
 
 ```
 
-3. Write a custom function to read in the data and append a site column to the data. 
+## 3. Write a custom function to read in the data and append a site column to the data. 
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
 
@@ -101,7 +101,7 @@ headers <- pdf_text('https://snowstudies.org/wp-content/uploads/2022/02/Serially
 
 ```
 
-4. Use the `map` function to read in both meteorological files. Display a summary of your tibble.
+## 4. Use the `map` function to read in both meteorological files. Display a summary of your tibble.
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
 
@@ -120,29 +120,51 @@ summary(alldata2)
 
 ```
 
-
-```
-
-5. Make a line plot of mean temp by year by site (using the `air temp [K]` variable). Is there anything suspicious in the plot? Adjust your filtering if needed.
+## 5. Make a line plot of mean temp by year by site (using the `air temp [K]` variable). Is there anything suspicious in the plot? Adjust your filtering if needed.
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
 
 temp_yearly <- alldata2 %>% 
 group_by(year, site) %>%
-summarise(mean_temp = mean(`air_temp`,na.rm=T))
+summarise(mean_temp = mean(`air_temp`, na.rm=T))
 
-ggplot(temp_yearly,aes(x=year,y=mean_temp,color=site)) + 
+ggplot(temp_yearly,aes(x=year, y=mean_temp, color=site)) + 
   geom_point() + geom_line() +
   xlab("Year") + ylab("Mean Temperature (Degrees Kelvin)") +
   ggthemes::theme_few() + 
-  scale_color_brewer(palette = "Set2")
+  scale_color_brewer(palette = "Set2") + 
+  scale_x_continuous(breaks = pretty(c(2003,2012), n = 6)) +
+  theme(legend.position="bottom")
 
 ```
 
-6. Write a function that makes line plots of monthly average temperature at each site for a given year. Use a for loop to make these plots for 2005 to 2010. Are monthly average temperatures at the Senator Beck Study Plot ever warmer than the Snow Angel Study Plot?
-Hint: https://ggplot2.tidyverse.org/reference/print.ggplot.html
+## 6. Write a function that makes line plots of monthly average temperature at each site for a given year. Use a for loop to make these plots for 2005 to 2010. 
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
+
+temp_monthly <- alldata2 %>%
+    group_by(year, month, site) %>%
+    summarize(mean_temp = mean(`air_temp`, na.rm=T))
+
+plot_monthly <- function(year.no) {
+  plot <- temp_monthly %>%
+    filter(year == year.no) %>%
+    ggplot(aes(x=month, y=mean_temp, color=site)) + 
+      geom_line() +
+      xlab("Month") + ylab("Mean Temperature (Degrees Kelvin)") +
+      ggthemes::theme_few() + 
+      scale_color_brewer(palette = "Set2") + 
+      scale_x_discrete(c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+      scale_y_continuous(breaks = pretty(c(255,290), n = 4)) +
+      theme(legend.position="bottom")
+  print(plot)
+  }
+
+par(mfrow=c(5,1))
+
+for(i in 2005:2010){
+  plot_monthly(i)
+}
 
 ```
 
