@@ -25,9 +25,9 @@ snowarchive <- read_html("https://snowstudies.org/archived-data/")
 
 # Read link with specific pattern
 links <- snowarchive %>%
-  html_nodes('a') %>%
-  .[grepl('forcing',.)] %>%
-  html_attr('href')
+  html_nodes('a') %>% #look for links
+  .[grepl('forcing',.)] %>% #filter to only links with "forcing" term
+  html_attr('href') #tell it these are urls
 
 links # view
 
@@ -53,6 +53,7 @@ for(i in 1:length(file_names)){
   download.file(links[i],destfile=file_names[i])
 }
 
+
 # Download via map function
 #map2(links, file_names, download.file)
 
@@ -63,12 +64,40 @@ if(evaluate == T){
   map2(links[1:2],file_names[1:2],download.file)
 }else{print('data downloaded')}
 
+
 ```
 
 3. Write a custom function to read in the data and append a site column to the data. 
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
 
+# Traditional read in
+
+SASP <- read.csv("data/SBB_SASP_Forcing_Data.csv") %>%
+  select(1,2,3,7,10)
+  
+colnames(SASP) <- c("year","month","day","precip","temp")
+
+SBSP <- read.csv("data/SBB_SBSP_Forcing_Data.csv") %>%
+  select(1,2,3,7,10)
+  
+colnames(SBSP) <- c("year","month","day","precip","temp")
+
+# Combine csvs
+alldata <- rbind(SASP,SBSP)
+summary(alldata)
+
+# Read in via new function
+
+# Grab headers from metadata pdf
+library(pdftools)
+headers <- pdf_text('https://snowstudies.org/wp-content/uploads/2022/02/Serially-Complete-Metadata-text08.pdf') %>%
+  readr::read_lines(.) %>%
+  trimws(.) %>%
+  str_split_fixed(.,'\\.',2) %>%
+  .[,2] %>%
+  .[1:26] %>%
+  str_trim(side = "left")
 
 
 ```
@@ -76,6 +105,20 @@ if(evaluate == T){
 4. Use the `map` function to read in both meteorological files. Display a summary of your tibble.
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
+
+# Pull site name out of the file name and read in the .txt files
+read_data <- function(file){
+  name = str_split_fixed(file,'_',2)[,2] %>% 
+    gsub('_Forcing_Data.txt','',.) 
+  df <- read_fwf(file) %>% 
+    select(year=1, month=2, day=3, hour=4, precip=7, air_temp=10) %>% #choose and name columns
+    mutate(site = name) #add column 
+}
+
+alldata2 <- map_dfr(file_names,read_data) 
+
+```
+
 
 ```
 

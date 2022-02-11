@@ -184,8 +184,27 @@ pre code {
 <pre><code>## [1] &quot;SBB_SASP_Forcing_Data.txt&quot; &quot;SBB_SBSP_Forcing_Data.txt&quot;</code></pre>
 <pre><code>## [1] &quot;data downloaded&quot;</code></pre>
 <ol start="3" style="list-style-type: decimal">
-<li><p>Write a custom function to read in the data and append a site column to the data.</p></li>
-<li><p>Use the <code>map</code> function to read in both meteorological files. Display a summary of your tibble.</p></li>
+<li>Write a custom function to read in the data and append a site column to the data.</li>
+</ol>
+<pre><code>##       year          month             day            precip        
+##  Min.   :2003   Min.   : 1.000   Min.   : 1.00   Min.   :0.00e+00  
+##  1st Qu.:2005   1st Qu.: 3.000   1st Qu.: 8.00   1st Qu.:0.00e+00  
+##  Median :2007   Median : 6.000   Median :16.00   Median :0.00e+00  
+##  Mean   :2007   Mean   : 6.471   Mean   :15.76   Mean   :3.84e-05  
+##  3rd Qu.:2009   3rd Qu.: 9.000   3rd Qu.:23.00   3rd Qu.:0.00e+00  
+##  Max.   :2011   Max.   :12.000   Max.   :31.00   Max.   :6.11e-03  
+##       temp      
+##  Min.   :242.1  
+##  1st Qu.:265.8  
+##  Median :272.6  
+##  Mean   :272.6  
+##  3rd Qu.:279.7  
+##  Max.   :295.8</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Use the <code>map</code> function to read in both meteorological files. Display a summary of your tibble.</li>
+</ol>
+<p>```</p>
+<ol start="5" style="list-style-type: decimal">
 <li><p>Make a line plot of mean temp by year by site (using the <code>air temp [K]</code> variable). Is there anything suspicious in the plot? Adjust your filtering if needed.</p></li>
 <li><p>Write a function that makes line plots of monthly average temperature at each site for a given year. Use a for loop to make these plots for 2005 to 2010. Are monthly average temperatures at the Senator Beck Study Plot ever warmer than the Snow Angel Study Plot? Hint: <a href="https://ggplot2.tidyverse.org/reference/print.ggplot.html" class="uri">https://ggplot2.tidyverse.org/reference/print.ggplot.html</a></p></li>
 </ol>
